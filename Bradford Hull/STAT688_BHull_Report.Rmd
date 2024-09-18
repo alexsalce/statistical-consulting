@@ -1,0 +1,47 @@
+---
+title: "Advice on Statistical Methods for Bradford Hull's Research"
+author: "Huashi Li (lihuashi1@arizona.edu), Alex Salce (asalce@arizona.edu), Taryn Laird (tarynl@arizona.edu)"
+date: "2024-09-26"
+output: 
+  html_document:
+    df_print: paged
+    theme: cosmo
+  pdf_document: default
+header-includes:
+- \renewcommand*\familydefault{\sfdefault} %% this picks a sans serif font
+- \usepackage[T1]{fontenc}
+---
+
+## Executive Summary
+
+Bradford Hull is a 5th year PhD Student in Molecular and Cellular Biology. He is currently researching lifespans of Caenorhabditis elegans worms and the effects of  different stressors for worms living in different media. Part of his research goal is to perform statistical analyses to determine whether any of these stressors have significant effects on the lifespans of the worms, both within media (compared to a control) and between media for the same stressors. 
+
+By the time of our consultation, Bradford had already performed experiments and collected data for both agar and liquid media, using copper and DTT (dithiothreitol) as stressors. Due to some challenges unique to each media, he was not able to perform the same procedure to capture data for each media. 
+
+Bradford was able to provide his data in Excel for our review. The agar media experiments were performed in a manner suitable for the framework of Kaplan-Meier methods for lifespan analysis, which he has already successfully performed using the `survival` package in $R$. However, his data collection for the liquid media experiments required a different procedure that we determined was not suitable for the Kaplan-Meier analysis framework, and the desired statistical analyses would require a different approach.
+
+**Update with summary details of our reccomended approaches, and whether they will be able to accomplish all of his desired comparisons**
+
+## Detailed Summary
+
+### Background
+
+Bradford is seeking statistical consultation to help him determine how to adequately approach a statistical analysis for data which he has already captured from several experiments. His research intent is to study the effects of different stressors on the lifespans of worms living in different media.
+
+
+
+For agar media, he was able to isolate populations of $N=40$ worms per experimental unit and count the number of worms that had died at each timestep (every two days) until all of the worms had died. The procedure for agar media allowed for a straightforward Kaplan-Meier analysis of lifespan data for the desired within-media comparisons, using the `survival` package in R.
+
+However, for the liquid media experiment, he was only able to draw random samples from liquid reservoirs containing large populations of worms ($N\approx 5000$ at the same time intervals. At each timestep, 
+
+
+### Methods
+
+### Results
+
+#### Interpretation of Results
+
+
+### Appendix
+
+
