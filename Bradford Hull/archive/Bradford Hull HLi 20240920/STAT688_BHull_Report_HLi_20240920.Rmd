@@ -54,7 +54,7 @@ At each timestep, each agar culture sample was able to be observed in its entire
 
 #### Liquid
 
-Due to challenges with measurement/observation of the worms in liquid media, the experimental procedure did not allow for the observation of the same worms. At each time step, one sample of approximately $150\mu \text{L}$ was drawn from each separate replicate and raw numbers of dead/alive worms were assessed using special lab equipment. Each sample captured approximately 90 worms, and after data collection these worms were discarded. Each experimental unit's data was recorded until there were two consecutive measurements of all-dead worms.
+Due to challenges with measurement/observation of the worms in liquid media, the experimental procedure did not allow for the observation of the same worms. At each time step, one sample of approximately $150\mu \text{L}$ was drawn from each separate replicate and raw numbers of dead/alive worms were assessed using special lab equipment. Each sample captured approximately 90 worms. After data collection these worms were discarded. Each experimental unit's data was recorded until there were two consecutive measurements of all-dead worms.
 
 #### **3.Results and Evaluation**
 
@@ -86,7 +86,7 @@ include_graphics("pooledsurvival.png")
 
 ##### **Liquid**
 
-The experimental procedure for the liquid media does not capture time-to-event data as would be required for a similar analysis as the  agar media. This method uses a random sample draw from the experimental unit population without replacement at each time step, and can only observe the sampled worms at that time step. 
+The experimental procedure for the liquid media does not capture time-to-event data as would be required for a similar analysis as the  agar media. This method uses a random sample draw from the experimental unit population without replacement at each time step, and can only observe the sampled worms at that time step.
 
 K-M and log rank test analyses require that experimental subjects all be observed from the beginning of the study until either a death or a censoring event. We can actually safely assume that worms that were alive at a sample have been alive for the length of the experiment, however we cannot say whether or not any of the sampled dead worms were alive at the previous time step. So, we cannot estimate the survival curve in the same manner.
 
