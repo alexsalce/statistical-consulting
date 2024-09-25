@@ -32,21 +32,21 @@ Bradford was able to provide his data in Excel for our review. The agar media ex
 
 Based on the experimental procedure for liquid media of random sampling at time steps, we recommend using the proportion data to generate estimated empirical CDF curves, from which estimated survival curves can be generated for qualitative comparisons of treatments within media. The sampling methods provide unbiased estimates of the population proportions at each time step, so they are reasonable estimates of the curves and reasonable for qualitative analysis. 
 
-We recommend using the estimated empirical CDF and survival curves for qualitative comparisons between the two media. Specifically, we suggest comparing the Kaplan-Meier curve for the agar data with the estimated survival curve for the liquid data, providing a clear visual comparison of survival trends. Although the methods for data collection differ, they are not unreasonable for qualitative comparisons.
+However, we cannot recommend any direct media-to-media comparisons, as the procedure for this data collection violates a required assumption that all individuals in the study must be evaluated at each time step until an event (death or censoring).
 
 ## **Detailed Summary**
 
 ### **1. Background**
 
-Bradford is seeking statistical consultation to help him determine how to adequately approach a statistical analysis for data which he has already captured from several experiments. His research intent is to study the effects of different stressors on the lifespans of worms living in different media, and to compare how the same stressors in different media affect the lifespans of worms. Ultimately this research should aid in generalizing protocol for research using Caenorhabditis elegans as test subjects.
+Bradford is seeking statistical consultation to help him determine how to adequately approach a statistical analysis for data which he has already captured from several experiments. His research intent is to study the effects of different stressors on the lifespans of worms living in different media, and to compare how the same stressors in different media can affect the lifespans of worms when prepared in different media. Ultimately this research should aid in generalizing protocol for research using Caenorhabditis elegans as test subjects.
 
-During our consultation, he was able to describe in detail the procedures that were carried out.  First, agar experimental units were made by adding $N=40$ worms to 9 total agar plates. Stressors, copper and DTT (dithiothreitol), were then added to plates. In total there were three plates for each stressor, as well as 3 control cultures in agar media. The $N=40$ and three replicates were chosen based on a power analysis from within the MCB department, but no further details were provided.
+During our consultation, he was able to describe in detail the procedures that were carried out.  First, agar experimental units were made by adding $N=40$ worms to 9 total agar culture dishes. Stressors, copper and DTT (dithiothreitol), were each added to three of the cultures so that in total there were three of each stressor, as well as 3 control cultures in agar media. The $N=40$ and three replicates were chosen based on a power analysis from within the MCB department, but no further details were provided.
 
-Next, liquid experimental units were made by adding approximately $N \approx 5000$ worms to each of three replicate liquid reservoirs per stressor; in total 9 liquid culture reservoirs were prepared. 
+Next, liquid experimental units were made by adding approximately $N \approx 5000$ worms to each of three replicate liquid reservoirs per stressor; in total there 9 liquid culture reservoirs were prepared. 
 
 It is important to note that all worms were originally drawn from the same population batch of eggs, and that all experimental units were prepared at the same time (same day).
 
-Ultimately, Bradford's goals for analysis are the following (in his words, taken from a follow up email statement):
+Ultimately, Bradford's goals for analysis are the following (in his words, taken from a follow up email statement).
 
 + "...determine if the liquid data can be fit into a K-M curve (and therefore be able to use the log-rank test on it)"
 + "...determine if liquid copper and DTT are different from liquid control"
@@ -65,7 +65,7 @@ The study began the day the experimental units were prepared, and all worms were
 
 #### **Agar**
 
-At each timestep, each agar culture sample was observed in its entirety. That is, all of the original $N=40$ worms in each sample could be observed, and the number of dead worms were counted. In this sense, individual worms were tracked throughout each timestep of the study, which is an important condition for Kaplan-Meier lifespan analysis. It is worth noting that each of the three replicates are in separate plates, and no worms were able to escape. Each experimental unit's data was recorded until all worms in their respective units were deceased.
+At each timestep, each agar culture sample was able to be observed in its entirety, that is all of the original $N=40$ worms in each sample could be observed, and the number of dead worms were counted. In this sense, individual worms were tracked throughout each timestep of the study, which is an important condition for Kaplan-Meier lifespan analysis. It is worth noting that each of the three replicates are in separate plates, and no worms were able to escape. Each experimental unit's data was recorded until all worms in their respective units were deceased.
 
 #### **Liquid**
 
@@ -140,7 +140,7 @@ Where $\hat{S}(t)$ is the estimated survival curve and $\hat{F}_n(t)$ is the est
 
 The Estimated ECDF diagrams plot $\hat{F}_n(t)$, and would be used to visualize the cumulative mortality.
 
-```{r, fig.margin=TRUE, fig.show='hold', fig.cap="ECDF Curve", fig.align='center', out.width="100%", echo=FALSE}
+```{r, fig.margin=TRUE, fig.show='hold', fig.cap="ECDF Curve", fig.align='center', out.width="75%", echo=FALSE}
 include_graphics("ECDF_curve.png")
 ```
 
@@ -151,7 +151,7 @@ The estimated survival plots of $\hat{S}(t)=1-\hat{F}_n(t)$ are included as they
 There is a clear qualitative difference between DTT and the copper and control groups in time until events. It is possible there is difference between control and copper, however we cannot ascertain whether that is the case from this analysis alone.
 
 
-```{r, fig.margin=TRUE, fig.show='hold', fig.cap="Survival Curve", fig.align='center', out.width="100%", echo=FALSE}
+```{r, fig.margin=TRUE, fig.show='hold', fig.cap="Survival Curve", fig.align='center', out.width="75%", echo=FALSE}
 include_graphics("survival_curve.png")
 ```
 
@@ -162,19 +162,19 @@ Median lifespans may be of interest for qualitative comparisons of the survival 
 
 Comparing the median time between liquid and agar: In agar media, based on the survival curves, the median time is Copper < DTT < Control, which is different from the order in liquid media.
 
-```{r, fig.margin=TRUE, fig.show='hold', fig.cap="Survival Curve with medians", fig.align='center', out.width="100%", echo=FALSE}
+```{r, fig.margin=TRUE, fig.show='hold', fig.cap="Survival Curve with medians", fig.align='center', out.width="75%", echo=FALSE}
 include_graphics("survival_curve_medians.png")
 ```
 
-```{r, fig.margin=TRUE, fig.show='hold', fig.cap="ECDF Curve with medians", fig.align='center', out.width="100%", echo=FALSE}
+```{r, fig.margin=TRUE, fig.show='hold', fig.cap="ECDF Curve with medians", fig.align='center', out.width="75%", echo=FALSE}
 include_graphics("ECDF_curve_medians.png")
 ```
 
 ### **4. Recommended further study**
 
-We recommend running a similar analysis as in replicate 1, and plot the survival curves and empirical CDF for replicates 2 and 3, as well as for experiments 2 and 3. Similar comparisons can be made between media.
+We recommend running a similar analysis as in replicate 1, and plot the survival curves and empirical CDF for replicates 2 and 3, as well as for experiments 2 and 3.
 
-There is still worthwhile information in the qualitative comparisons between media based on these results, however all caveats as outlined in this report should be disclosed and utilized at the discretion of the researchers. These between media comparisons can be made by plotting the media-comparison curves together as outlined in this report to communicate the results visually. The liquid experiments' data may not adequately fit the framework for formal survival analysis, but do provide statistically reasonable estimates of survival proportions at each time step independently. 
+There is still worthwhile information in the qualitative comparisons between media based on these results, however all caveats as outlined in this report should be disclosed and utilized at the discretion of the researchers. 
 
 
 ### **Appendix**
@@ -187,7 +187,8 @@ There is still worthwhile information in the qualitative comparisons between med
 
 -- Survival probabilities: Survival probabilities should be the same for people recruited early or late in the study.
 
--- Event occurrence: The time of the event must be available, and should not have occurred in between observations.  
+-- Event occurrence: The time of the event must be available, and should not have occurred in between observations.
+
 
 #### **2. Empirical CDF assumptions **
 
@@ -210,7 +211,7 @@ library(latex2exp)
 library(tidyr)
 library(dplyr)
 # Read in the experiment 1 data file
-data <- read.csv("C:/Bradford Hull/Liquid_experiment1.csv", header = TRUE)
+data <- read.csv("Liquid_experiment1.csv", header = TRUE)
 # Calculate survival ratios, survival probabilities, and cumulative proportion
 # of dead for replicate 1
 data <- data %>%
@@ -244,12 +245,7 @@ data <- bind_rows(day_0, data) %>%
 # Data for plotting survival curves
 data_SProb <- data %>%
               select(Day, control1_SProb, copper1_SProb, dtt1_SProb) %>%
-              gather(key = "Treatment", value = "Survival_Prob", -Day) %>%
-              mutate(Treatment = recode(Treatment, 
-                            "control1_SProb" = "Control", 
-                            "copper1_SProb" = "Copper", 
-                            "dtt1_SProb" = "DTT"))
-
+              gather(key = "Treatment", value = "Survival_Prob", -Day)
 # Calculate medians for each treatment
 medians_Sprob <- data_SProb %>%
   group_by(Treatment) %>%
@@ -271,19 +267,14 @@ survival_curves <- ggplot(data_SProb, aes(x = Day, y = Survival_Prob, color = Tr
                  ylim(0, 1.05) +   
                  xlim(0, 35) +     
                  theme(text = element_text(size = 12)) +
-                 scale_color_manual(values = c("Control" = "black", 
-                                "Copper" = "blue", 
-                                "DTT" = "red"))
+                 scale_color_manual(values = c("control1_SProb" = "black", 
+                                               "copper1_SProb" = "blue", 
+                                               "dtt1_SProb" = "red"))
 # Empirical CDF 
 # Data for plotting ECDF
 data_ECDF <- data %>%
              select(Day, control1_CDead, copper1_CDead, dtt1_CDead) %>%
-             gather(key = "Treatment", value = "Cumulative_Dead", -Day) %>%
-              mutate(Treatment = recode(Treatment, 
-                            "control1_CDead" = "Control", 
-                            "copper1_CDead" = "Copper", 
-                            "dtt1_CDead" = "DTT"))
-
+             gather(key = "Treatment", value = "Cumulative_Dead", -Day)
 # Calculate medians for each treatment
 medians_ECDF <- data_ECDF %>%
   group_by(Treatment) %>%
@@ -292,7 +283,7 @@ medians_ECDF <- data_ECDF %>%
 ECDF_curves<-ggplot(data_ECDF, aes(x = Day, y = Cumulative_Dead, color = Treatment)) +
              geom_step(size = 1) +   
              geom_line(size = 1, linetype = "dotted") +
-             geom_vline(data = medians_ECDF, linetype="dotted", 
+             geom_vline(data = medians_Sprob, linetype="dotted", 
                         aes(xintercept = median_day, colour = Treatment)) + 
              labs(title = "Estimated Empirical CDF Curves for Control, Copper, 
                   and DTT for replicate 1",
@@ -304,7 +295,7 @@ ECDF_curves<-ggplot(data_ECDF, aes(x = Day, y = Cumulative_Dead, color = Treatme
              ylim(0, 1.05) +   
              xlim(0, 35) +     
              theme(text = element_text(size = 12)) +
-             scale_color_manual(values = c("Control" = "black", 
-                                "Copper" = "blue", 
-                                "DTT" = "red"))
+             scale_color_manual(values = c("control1_CDead" = "black", 
+                                           "copper1_CDead" = "blue", 
+                                           "dtt1_CDead" = "red"))
 ```

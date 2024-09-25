@@ -1,0 +1,261 @@
+---
+title: "Vaccine hesitancy analysis for Alex Vazquez"
+author:
+- Shannon Gutenkunst (shannonlg@arizona.edu)
+- Nick Mercier (nmercier@email.arizona.edu)
+- Wenbo Ouyang (wenboouyang@email.arizona.edu)
+date: November 23, 2021
+output:
+  pdf_document: default
+  html_document: default
+subtitle: STAT 688 Statistical Consulting with Dean Billheimer
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+# Executive Summary
+
+## Background
+
+The overall goal of Alex's team is to address vaccine hesitancy. They surveyed people who were at high risk of complications from COVID-19 who received the COVID-19 vaccine in early 2021 at clinics run by the UA College of Public Health in Tucson and Phoenix, AZ. These clinics were in locations designed to assist people with logistical challenges (e.g., time or travel issues) getting to one of the bigger vaccine sites. The survey asked those who usually get a flu vaccine every year to select their reasons why they do so. The survey asked those who usually do not get a flu vaccine every year but did get the COVID-19 vaccine to select the reasons why they got the COVID-19 vaccine. The survey also asked respondents if they had gotten their flu vaccine this season and included other demographic information (gender, birth year, race/ethnicity, and type of health coverage).
+
+## Methods
+
+To understand the characteristics of those sampled, we tabulated descriptive statistics for the sample overall and broken down by whether or not the respondent usually got the flu shot. To determine factors associated with usually getting the flu shot or not, we performed Pearson's Chi-squared test for categorical variables (flu shot this year, gender, race/ethnicity, and health coverage) and analysis of variance (ANOVA) for the one continuous variable (age in years). To understand reasons why respondents who usually got the flu vaccine did so, we made a table with the number and percent who chose each reason, along with a figure showing the percents; to understand reasons why respondents who usually do not get the flu vaccine decided to get the COVID-19 vaccine, we made a similar table and plot. Note that percents could add up to more than 100%, because respondents were allowed to choose more than one reason for each question.
+
+## Key Results
+
+Respondents who usually get a flu shot were more likely to have had a flu shot this season ($p-value < 0.001$) and to have good health coverage ($p-value = 0.003$). Respondents' other characteristics such as their gender, age, and race/ethnicity were not strongly associated with whether or not they usually get a flu shot. Top reasons for choosing to get the flu shot each year were *Health and safety* (67.1%), followed by *Recommended to me by a doctor or healthcare professional* (36.8%), and *To protect others* (32.9%). Top reasons for choosing to get the COVID-19 vaccine even though they usually do not get the flu vaccine were *To protect myself* (64.8%), followed by *Help end the pandemic* (38.9%), *To protect others* (35.2%), and *Recommended to me by a doctor or healthcare professional* (25.9%). 
+
+## Limitations
+
+The results of this survey are conditional on people at high risk of complications from COVID-19 who showed up to one of the UA College of Public Health COVID-19 vaccine clinics in the community in the Tucson or Phoenix areas and received a COVID-19 vaccine in early 2021. When planning future surveys to make inferences about a given population, it would be ideal to make a list of people in the population, and then give surveys to people randomly sampled from that list. Helping you plan another survey would be a great project for our statistical consulting class, if that is something that interests you in the future.
+
+# Detailed Summary
+
+## Data cleaning and recoding
+
+Our first step was to clean and recode the data, to make it easier to perform statistical tests and plot. Below is a list of what we did; we will share the commented Rmarkdown file, so that you can see in detail. 
+
+* Data from survey ID number 24 were removed, because they were given the wrong form. 
+* Binary Yes/No and Male/Female responses were recoded to 1/0 (all respondents had chosen either Male or Female).
+* Age was calculated from birth year. 
+* For race/ethnicity, two respondents selected two race/ethnicities, which were recoded as "Two or more races".
+* For health coverage, ten respondents had circled both "Medicare" and "Medicaid"; these were recoded to a new level of "Medicare and Medicaid". 
+* New variables were created for Question 3 (a)-(f) and Question 4 (a)-(g), to capture the number of respondents who selected each option. For example, variable Q3a had a "1" each time someone selected Question 3 (a) and a "0" if they did not; if the entire question was missing, it was coded as missing.
+
+
+```{r read_in_clean_recode}
+# Load packages
+library(tidyverse) # to muck with the data
+library(readxl) # to read in the data
+
+# Read in the data
+vac.tb <- read_excel("/Users/shannonlg/Dropbox/STAT_688/Vazquez.Alex/analysis/SurveyData.xlsx", 
+                     sheet=1, range="A4:L134", na = "NA",
+                     col_names=c("ID", "Language", "Q1", "Q2", "Q3", "Q3_f", "Q4", "Q4_g", "Q5", "Q6", "Q7", "Q8"))
+
+# Clean and recode data
+vac.tb <- vac.tb %>% 
+  # Remove survey ID number 24, because they were given the wrong form
+  filter(ID != 24) %>%
+  # Q1: Did you get your flu shot this season? Yes = 1; No = 0
+  mutate(Q1_flu_shot_this_season = ifelse(Q1 == 'Y', 1, 0), # none missing for Q1
+         # Q2: Do you usually get the flu shot every year? Yes = 1; No = 2
+         Q2_flu_shot_usually = ifelse(Q2 == 'a', 1, 0), # none missing for Q2
+         # Q5: What is your gender? a = Male; b = Female; c = Other; d = Perfer not to say
+         # This works for Q5, because all answers are either a = Male or b = Female; 
+         # none are Other, Prefer not to say, or missing
+         Q5_is_Male = ifelse(Q5 == 'a', 1, 0), 
+         # Q6: birth year; change this to age
+         Q6_age = 2021 - Q6,
+         # Q7 What is your race/ethnicity?
+         # a.	Caucasian; b = African-American; c = Native American; d = Two or more races;
+         # e = Asian; f = Native Hawaiian or Pacific Islander; g = Hispanic; h = Other; i = Prefer not to say
+         # Two respondents selected two race/ethnicities for Q7, 
+         # and they are put into the category of d = Two or more races
+         Q7 = ifelse((Q7 == "a,f" | Q7 == "c,f"), "d", Q7),
+         Q7_race_eth = factor(Q7,
+                                 levels = letters[1:9],
+                                 labels = c("Caucasian", "African-American", "Native American", 
+                                            "Two or more races", "Asian", "Native Hawaiian/Pac. Islander", 
+                                            "Hispanic", "Other", "Prefer not to say")),
+         # Q8: What type of health coverage do you have?
+         # a =Private; b = Medicare; c = Medicaid; d = Military; e = No insurance
+         # Ten respondents circled both b & c
+         Q8_health_ins = factor(Q8, 
+                                   levels = c("a", "b", "b,c", "c", "d", "e"),
+                                   labels = c("Private", "Medicare", "Medicare and Medicaid",
+                                              "Medicaid", "Military", "No insurance")),
+         # For Q3 and Q4, sum up the answers for each possible response (1 = selected; 0 = not selected)
+         # There is probably a better way to code this (without repeating code like below);
+         # however, it would take longer to figure out...
+         Q3a = ifelse(str_detect(Q3, "a"), 1, 0),
+         Q3b = ifelse(str_detect(Q3, "b"), 1, 0),
+         Q3c = ifelse(str_detect(Q3, "c"), 1, 0),
+         Q3d = ifelse(str_detect(Q3, "d"), 1, 0),
+         Q3e = ifelse(str_detect(Q3, "e"), 1, 0),
+         Q3f = ifelse((str_detect(Q3, "f") | !is.na(Q3_f)), 1, 0),
+         Q4a = ifelse(str_detect(Q4, "a"), 1, 0),
+         Q4b = ifelse(str_detect(Q4, "b"), 1, 0),
+         Q4c = ifelse(str_detect(Q4, "c"), 1, 0),
+         Q4d = ifelse(str_detect(Q4, "d"), 1, 0),
+         Q4e = ifelse(str_detect(Q4, "e"), 1, 0),
+         Q4f = ifelse(str_detect(Q4, "f"), 1, 0),
+         Q4g = ifelse((str_detect(Q4, "g") | !is.na(Q4_g)), 1, 0),
+  ) %>%
+  # only keep the modified variables and other variables we want
+  select(c("ID", "Language", "Q1_flu_shot_this_season", "Q2_flu_shot_usually", 
+           "Q3a", "Q3b", "Q3c", "Q3d", "Q3e", "Q3f", 
+           "Q4a", "Q4b", "Q4c", "Q4d", "Q4e", "Q4f", "Q4g", 
+           "Q5_is_Male", "Q6_age", "Q7_race_eth", "Q8_health_ins"))
+```
+
+## Descriptive statistics
+
+Descriptive statistics for the respondents in the survey are presented in Table 1 below, for the entire sample and also broken down by whether or not respondents usually get the flu vaccine. Respondents who usually get a flu shot were more likely to have had a flu shot this season ($p-value < 0.001$) and to have good health coverage like private insurance or Medicare ($p-value = 0.003$). Respondents' other characteristics such as their gender, age, and race/ethnicity were not strongly associated with whether or not they usually get a flu shot.
+
+```{r descriptive_stats, results="asis"}
+
+# Following https://cran.r-project.org/web/packages/arsenal/vignettes/tableby.html
+
+# load packages
+library(arsenal) # for tableby function to make table
+library(knitr) # for printing table
+
+
+# Make appropriate variables factors with nice labels for their levels
+vac.tb <- vac.tb %>% 
+  mutate(Q1_flu_shot_this_season = factor(Q1_flu_shot_this_season, 
+                                          levels = c(0, 1),
+                                          labels = c("No", "Yes")),
+         Q5_Gender = factor(Q5_is_Male, 
+                            levels = c(0,1),
+                            labels = c("Female", "Male")),
+         Q2_flu_shot_usually = factor(Q2_flu_shot_usually,
+                                      levels = c(0,1),
+                                      labels = c("No flu shot usually", "Flu shot usually")),
+         # Collapse levels of race/ethnicity to be able to calculate a p-value:
+         # the levels of Asian, Other, and Prefer not to say each have 0, so I've set them to NA so they 
+         # do not appear in the table
+         Q7_race_eth_collapsed = factor(Q7_race_eth,
+                                 levels = c("Caucasian", "African-American", "Native American", 
+                                            "Two or more races", "Asian", "Native Hawaiian/Pac. Islander", 
+                                            "Hispanic", "Other", "Prefer not to say"),
+                                 labels = c("Caucasian", "African-American", "Native American", 
+                                            "Two or more races", NA, "Native Hawaiian/Pac. Islander", 
+                                            "Hispanic", NA, NA))
+         )
+
+# Create nice labels for the dataset that will appear in the table
+labels(vac.tb)  <- c(Q1_flu_shot_this_season = "Flu shot this season", Q2_flu_shot_usually = 'Flu shot usually', Q5_Gender = "Gender", Q6_age = "Age (years)", Q7_race_eth = "Race/ethnicity", Q7_race_eth_collapsed = "Race/ethnicity", Q8_health_ins = "Health coverage")
+
+# Following https://cran.r-project.org/web/packages/arsenal/vignettes/tableby.html
+# "To create a simple table stratified by treatment arm, use a formula statement 
+# to specify the variables that you want summarized."
+tab1 <- tableby(Q2_flu_shot_usually ~ Q1_flu_shot_this_season + Q5_Gender + Q6_age + 
+                  Q7_race_eth_collapsed + Q8_health_ins, 
+                data = vac.tb,
+                control=tableby.control(numeric.stats=c("Nmiss", "mean", "sd", "range"), 
+                                        stats.labels=list(Nmiss='Missing values', mean="Mean", sd = "Standard deviation", range="Range")))
+summary(tab1, pfootnote=TRUE, digits = 0, title='Descriptive Statistics')
+
+
+```
+
+
+## Reasons why respondents who usually get the flu vaccine decide to get the flu vaccine
+
+Question 3 of the survey asked respondents who usually get the flu shot every year to select all that applied from a list of reasons why. Their responses are tabulated in Table 2 and plotted in Figure 1. Top reasons for choosing to get the flu shot each year were *Health and Safety* (67.1%), followed by *Recommended to me by a doctor or healthcare professional* (36.8%), and *To Protect Others* (32.9%). Less popular reasons were *It was free* and *Other* (each 10.5%) followed by *Never really thought about it* (6.6%).
+
+```{r reasons_get_flu_vac}
+
+# For Q3, the appropriate denominator is the number of respondents who usually get the flu shot (= 76 here)
+denom1 <- sum(vac.tb$Q2_flu_shot_usually == "Flu shot usually")
+
+# Sum up the number who circled each reason
+vacQ3summary.tb <- vac.tb %>% select(starts_with("Q3")) %>% summarize(across(.cols = everything(), 
+                                                                             ~sum(., na.rm = TRUE)))
+
+# Make a vector of the reasons for the table and figure
+Q3reason <- c("Recommended by healthcare professional", "Health and safety", "To protect others",
+               "Never really thought about it", "It was free", "Other")
+
+# Create a tibble (a fancy data frame) with the sum up the number who circled each reason (Number),
+# as well as the percent who circled each reason (Percent)
+Q3table.tb <- tibble(Reason = Q3reason, Number = as.vector(t(vacQ3summary.tb)), Percent = round(as.vector(t(vacQ3summary.tb))/denom1*100., digits=1))
+
+# Output a pretty table of the above, with a caption describing what was done
+kable(Q3table.tb, 
+      caption = "Those who usually get a flu shot every year (n = 76) were asked 
+      to select all reasons why from the ones listed below. The column *Number* gives
+      the number of respondents who selected that answer. The column *Percent* gives the 
+      percent of respondents who selected that answer, calculated as *Number*/76*100.
+      The percents add up to more than 100%, because respondents were allowed
+      to select more than one reason.")
+
+# Plot the data in the above table
+Q3table.tb %>% ggplot(aes(x = Percent, y = Reason)) + 
+  geom_col() + 
+  # keep reasons in same order as asked and as in the table
+  scale_y_discrete(limits = rev(Q3reason)) + 
+  theme_bw() +
+  labs(title = "Figure 1",
+       subtitle = "Percents calculated as in Table 2")
+
+```
+
+
+## Reasons why respondents who usually do not get the flu vaccine got the COVID-19 vaccine 
+
+Question 4 of the survey asked respondents who usually do NOT get the flu shot every year to select all that applied from a list of reasons why they DID get the COVID-19 vaccine. Their responses are tabulated in Table 3 and plotted in Figure 2. Top reasons for choosing to get the COVID-19 vaccine even though they usually do not get the flu vaccine were *To protect myself* (64.8%), followed by *Help end the pandemic* (38.9%), *To protect others* (35.2%), and *Recommended to me by a doctor or healthcare professional* (25.9%). 
+
+
+```{r reasons_get_COVID_vac_if_not_flu}
+
+# For Q4, the appropriate denominator is the number of respondents who usually do NOT get the flu shot (= 54 here)
+denom2 <- sum(vac.tb$Q2_flu_shot_usually == "No flu shot usually")
+
+# Sum up the number who circled each reason
+vacQ4summary.tb <- vac.tb %>% select(starts_with("Q4")) %>% summarize(across(.cols = everything(), 
+                                                                             ~sum(., na.rm = TRUE)))
+
+# Make a vector of the reasons for the table and figure
+Q4reason <- c("Recommended by healthcare professional", "To protect myself", "To protect others", 
+              "It was free", "Convenience", "Help end the pandemic", "Other")
+
+# Create a tibble (a fancy data frame) with the sum up the number who circled each reason (Number),
+# as well as the percent who circled each reason (Percent)
+Q4table.tb <- tibble(Reason = Q4reason, Number = as.vector(t(vacQ4summary.tb)), Percent = round(as.vector(t(vacQ4summary.tb))/denom2*100., digits=1))
+
+# Output a pretty table of the above, with a caption describing what was done
+kable(Q4table.tb, 
+      caption = "Those who usually do NOT get a flu shot every year (n = 54) were asked 
+      to select all reasons why they got the COVID-19 vaccine from the ones listed below. 
+      The column *Number* gives the number of respondents who selected that answer. The column 
+      *Percent* gives the percent of respondents who selected that answer, calculated as *Number*/54*100.
+      The percents add up to more than 100%, because respondents were allowed
+      to select more than one reason.")
+
+# Plot the data in the above table
+Q4table.tb %>% ggplot(aes(x = Percent, y = Reason)) + 
+  geom_col() + 
+  # keep reasons in same order as asked and as in the table
+  scale_y_discrete(limits = rev(Q4reason)) + 
+  theme_bw() +
+  labs(title = "Figure 2",
+       subtitle = "Percents calculated as in Table 3")
+
+
+
+```
+
+
+

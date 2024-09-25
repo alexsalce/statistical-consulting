@@ -32,7 +32,9 @@ Bradford was able to provide his data in Excel for our review. The agar media ex
 
 Based on the experimental procedure for liquid media of random sampling at time steps, we recommend using the proportion data to generate estimated empirical CDF curves, from which estimated survival curves can be generated for qualitative comparisons of treatments within media. The sampling methods provide unbiased estimates of the population proportions at each time step, so they are reasonable estimates of the curves and reasonable for qualitative analysis. 
 
-We recommend using the estimated empirical CDF and survival curves for qualitative comparisons between the two media. Specifically, we suggest comparing the Kaplan-Meier curve for the agar data with the estimated survival curve for the liquid data, providing a clear visual comparison of survival trends. Although the methods for data collection differ, they are not unreasonable for qualitative comparisons.
+However, we cannot recommend any direct media-to-media comparisons, as the procedure for this data collection violates a required assumption that all individuals in the study must be evaluated at each time step until an event (death or censoring). 
+
+We recommend using the estimated empirical CDF and survival curves for approximate comparisons between the two media. Specifically, we suggest comparing the Kaplan-Meier curve for the agar data with the estimated survival curve for the liquid data, providing a clear visual comparison of survival trends.
 
 ## **Detailed Summary**
 
@@ -40,13 +42,13 @@ We recommend using the estimated empirical CDF and survival curves for qualitati
 
 Bradford is seeking statistical consultation to help him determine how to adequately approach a statistical analysis for data which he has already captured from several experiments. His research intent is to study the effects of different stressors on the lifespans of worms living in different media, and to compare how the same stressors in different media affect the lifespans of worms. Ultimately this research should aid in generalizing protocol for research using Caenorhabditis elegans as test subjects.
 
-During our consultation, he was able to describe in detail the procedures that were carried out.  First, agar experimental units were made by adding $N=40$ worms to 9 total agar plates. Stressors, copper and DTT (dithiothreitol), were then added to plates. In total there were three plates for each stressor, as well as 3 control cultures in agar media. The $N=40$ and three replicates were chosen based on a power analysis from within the MCB department, but no further details were provided.
+During our consultation, he was able to describe in detail the procedures that were carried out.  First, agar experimental units were made by adding $N=40$ worms to 9 total agar plates. Stressors, copper and DTT (dithiothreitol), were then added to plates.In total there were three plates for each stressor, as well as 3 control cultures in agar media. The $N=40$ and three replicates were chosen based on a power analysis from within the MCB department, but no further details were provided.
 
 Next, liquid experimental units were made by adding approximately $N \approx 5000$ worms to each of three replicate liquid reservoirs per stressor; in total 9 liquid culture reservoirs were prepared. 
 
 It is important to note that all worms were originally drawn from the same population batch of eggs, and that all experimental units were prepared at the same time (same day).
 
-Ultimately, Bradford's goals for analysis are the following (in his words, taken from a follow up email statement):
+Ultimately, Bradford's goals for analysis are the following (in his words, taken from a follow up email statement).
 
 + "...determine if the liquid data can be fit into a K-M curve (and therefore be able to use the log-rank test on it)"
 + "...determine if liquid copper and DTT are different from liquid control"
@@ -65,7 +67,7 @@ The study began the day the experimental units were prepared, and all worms were
 
 #### **Agar**
 
-At each timestep, each agar culture sample was observed in its entirety. That is, all of the original $N=40$ worms in each sample could be observed, and the number of dead worms were counted. In this sense, individual worms were tracked throughout each timestep of the study, which is an important condition for Kaplan-Meier lifespan analysis. It is worth noting that each of the three replicates are in separate plates, and no worms were able to escape. Each experimental unit's data was recorded until all worms in their respective units were deceased.
+At each timestep, each agar culture sample was able to be observed in its entirety, that is all of the original $N=40$ worms in each sample could be observed, and the number of dead worms were counted. In this sense, individual worms were tracked throughout each timestep of the study, which is an important condition for Kaplan-Meier lifespan analysis. It is worth noting that each of the three replicates are in separate plates, and no worms were able to escape. Each experimental unit's data was recorded until all worms in their respective units were deceased.
 
 #### **Liquid**
 
@@ -174,7 +176,7 @@ include_graphics("ECDF_curve_medians.png")
 
 We recommend running a similar analysis as in replicate 1, and plot the survival curves and empirical CDF for replicates 2 and 3, as well as for experiments 2 and 3. Similar comparisons can be made between media.
 
-There is still worthwhile information in the qualitative comparisons between media based on these results, however all caveats as outlined in this report should be disclosed and utilized at the discretion of the researchers. These between media comparisons can be made by plotting the media-comparison curves together as outlined in this report to communicate the results visually. The liquid experiments' data may not adequately fit the framework for formal survival analysis, but do provide statistically reasonable estimates of survival proportions at each time step independently. 
+There is still worthwhile information in the qualitative comparisons between media based on these results, however all caveats as outlined in this report should be disclosed and utilized at the discretion of the researchers. 
 
 
 ### **Appendix**

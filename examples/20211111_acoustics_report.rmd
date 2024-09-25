@@ -1,0 +1,341 @@
+---
+title: "Acoustics data analysis for Amanda Stark"
+author:
+- Nick Mercier (nmercier@email.arizona.edu)
+- Shannon Gutenkunst (shannonlg@arizona.edu)
+- Wenbo Ouyang (wenboouyang@email.arizona.edu)
+date: "November 11, 2021"
+output:
+  pdf_document: default
+  html_document: default
+subtitle: STAT 688 Statistical Consulting with Dean Billheimer
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+# Executive Summary
+
+## Question
+The research question primarily involved if there was an impact on AVQI scores between two different treatments (LMRVT and Straw Exercises). Additionally, we provided several different visualizations of Amanda's acoustics data, including a heat map of correlations for the entire data set, and detailed scatter plots for the f0 and AVQI variables of interest. We also provided Amanda with our Rmarkdown file as a template, so that she can easily make similar plots or analyses of other variables.
+
+## Methods
+First, the pre-treatment acoustics data was represented in a heat map to show correlations between all potential variables of interest. Additionally, a heat map of post- minus pre-treatment acoustics data was presented to show how these correlations change when taking the post-pre difference. We also included specific correlations and histograms for the f0 and AVQI variables of interest in both pre and post-pre forms, as well as several scatter plots of f0 and AVQI variables separated by gender. Finally, for our formal analysis, we fit a simple linear regression model for the post- minus pre-treatment AVQI difference on both Treatment and Age, as well as calculated mean and 95% confidence intervals for the post-pre difference for AVQI for both the LMRVT and Straw Exercise treatment groups, and for the difference between those two groups.
+
+## Key Results
+Our linear regression of post-pre AVQI difference on Treatment and Age showed that neither had a statistically significant impact on AVQI (with p-values of 0.38 and 0.28, respectively). In addition, the estimated mean post-pre AVI difference for LMRVT was -0.24 with 95% confidence interval (CI) of (-0.52, 0.04) and that for straw treatment was -0.08 with 95% CI (-0.30, 0.13); both of these 95% CIs include 0, indicating no statistically significant difference in post-pre AVQI difference for either treatment. Finally, the estimated mean difference of the post-pre AVQI difference between treatments (straw minus LMRVT) was 0.16 with 95% CI (-0.20, 0.52) which includes 0, indicating no statistically significant difference in post-pre AVQI between treatments. However, these results indicating no statistically significant differences may not mean that no differences exist (see Limitations below).
+
+## Limitations
+Our primary limitation was caused by power restrictions. There were 51 unique post-pre differences in subjects for AVQI, compared to the original study's intended 150 participants. This left our analysis underpowered and unable to determine if the lack of significance found by our analysis was caused by a true lack of difference.
+
+# Detailed Summary
+
+```{r read_in_data}
+
+# setwd("/Users/shannonlg/Dropbox/STAT_688/Stark.Amanda/analysis/")
+
+library(tidyverse) # to muck with the data
+library(emmeans) # for estimated marginal means (EMMs) for linear models & computing contrasts
+library(knitr) # for kable function to print pretty tables
+library(broom) # to tidy linear model results
+library(reshape2) # needed for melting (putting in long form) correlation matrix
+
+# read in the data
+pre_tx.tb <- read_csv("SOVT_Aim5_PreTX_acoustics.csv")
+# Revised post_tx file received from Amanda Nov. 8, 2021
+post_tx.tb <- read_csv("SOVT_Aim5_PostTX_acoustics_STATS_revised20211108.csv")
+
+# fix the indexing error for i_SPL in post_tx.tb:
+# this was only needed for the original post_tx.tb file; not need in revised file
+# for (i in seq_along(1:(length(post_tx.tb$ID)-1))){
+#   post_tx.tb$i_SPL[i] <- post_tx.tb$i_SPL[i+1]
+# }
+
+# remove the last two rows here, because they are just empty
+post_tx.tb <- post_tx.tb %>% slice(., 1:(n()-2))
+
+# make a tibble of the post minus pre differences
+diff_tx_initial_stuff.tb <- pre_tx.tb[,1:5]
+diff_tx_diffs.tb <- post_tx.tb[,6:34] - pre_tx.tb[,6:34]
+diff_tx.tb <- diff_tx_initial_stuff.tb %>% 
+  add_column(., diff_tx_diffs.tb) %>% 
+  mutate(time = "diff")  %>% 
+  # only look at groups 2-5, b/c group 1 is controls and has repeats in other groups
+  filter(Group != 1 ) %>%
+  # combine groups 2 & 3 (LMRVT) and groups 4 & 5 (straw)
+  mutate(group_name = ifelse((Group == 2 | Group == 3), "LMRVT", "straw"), .before = Diagnosis)
+
+pre_tx.tb <- pre_tx.tb %>%
+  mutate(time = "pre")  %>% 
+  # only look at groups 2-5, b/c group 1 is controls and has repeats in other groups
+  filter(Group != 1 ) %>%
+  # combine groups 2 & 3 (LMRVT) and groups 4 & 5 (straw)
+  mutate(group_name = ifelse((Group == 2 | Group == 3), "LMRVT", "straw"), .before = Diagnosis)
+
+post_tx.tb <- post_tx.tb %>%
+mutate(time = "post")  %>% 
+  # only look at groups 2-5, b/c group 1 is controls and has repeats in other groups
+  filter(Group != 1 ) %>%
+  # combine groups 2 & 3 (LMRVT) and groups 4 & 5 (straw)
+  mutate(group_name = ifelse((Group == 2 | Group == 3), "LMRVT", "straw"), .before = Diagnosis)
+
+
+```
+
+## Correlation plot heat maps for all pairs of acoustics variables 
+
+The goal with these correlation plot heat maps is to see how the acoustics variables are related to each other and to other variables such as Age and Sex, which may help in deciding which analyses are appropriate and of interest. The first plot below is a correlation plot heat map for all pairs of pre-treatment acoustics variables, ordered by the order in the file. The second plot below shows the same thing, except for all pairs of acoustics variables where the acoustics variable value is given by its post-treatment value minus its pre-treatment value. These plots are helpful for seeing how covariates such as Sex and Age correlate with the acoustics variables. For example, Sex is highly negatively correlated with pre-treatment f0 variables with r ranging from -0.8 to -0.6; however, it is less highly correlated with post-pre f0 variables with r ranging from -0.2 to 0.1. The second plot could be helpful for choosing the outcome. For example, the post-treatment minus pre-treatment differences for the variables a_f0 and i_f0 have a high correlation of 0.8; thus, if you are interested in both of them, it is probably only necessary to look at one of them as the outcome (or use a summary measure of them both).
+
+
+```{r plots2}
+# correlation plot heat maps for acoustics variables
+# following http://www.sthda.com/english/wiki/ggplot2-quick-correlation-matrix-heatmap-r-software-and-data-visualization
+# library(reshape2) # needed for melting (putting in long form) correlation matrix; placed at top of file for ease of loading
+
+# Get upper triangle of the correlation matrix
+get_upper_tri <- function(cormat){
+  cormat[lower.tri(cormat)]<- NA
+  return(cormat)
+}
+
+reorder_cormat <- function(cormat){
+  # Use correlation between variables as distance
+  dd <- as.dist((1-cormat)/2)
+  hc <- hclust(dd)
+  cormat <-cormat[hc$order, hc$order]
+}
+
+cor_heat_map <- function(cormat){
+  # Get upper triangle of the correlation matrix
+  upper_tri <- get_upper_tri(cormat)
+  # Melt the correlation matrix
+  melted_cormat <- melt(upper_tri, na.rm = TRUE)
+  # Create a ggheatmap
+  ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value))+
+    geom_tile(color = "white")+
+    scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                         midpoint = 0, limit = c(-1,1), space = "Lab", 
+                         name="Pearson\nCorrelation") +
+    theme_minimal()+ # minimal theme
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+                                     size = 8, hjust = 1))+
+    coord_fixed()
+  
+  # Add correlation coefficients on the heatmap
+  ggheatmap + 
+    geom_text(aes(Var2, Var1, label = value), color = "black", size = 1.5) +
+    theme(
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+      panel.grid.major = element_blank(),
+      panel.border = element_blank(),
+      panel.background = element_blank(),
+      axis.ticks = element_blank(),
+      legend.justification = c(1, 0),
+      legend.position = c(0.6, 0.7),
+      legend.direction = "horizontal")+
+    guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
+                                 title.position = "top", title.hjust = 0.5))
+  
+}
+
+cormat1 <- pre_tx.tb %>% 
+  # select just the f0 variables and AVQI
+  # select(7:10, 35) %>%
+  # select all acoustics variables
+  select(5:35) %>%
+  cor(., use = "pairwise.complete.obs", method="pearson") %>%
+  round(., 1)
+
+print("Below: correlation plot heat map for all pre-treatment acoustics variables,")
+# print("in order given in file")
+cor_heat_map(cormat1)
+
+# Reorder the correlation matrix using correlation between variables as distance
+# cormat_reorder1 <- reorder_cormat(cormat1)
+# print("Below: correlation plot heat map for all pre-treatment acoustics variables,")
+# print("reordered using correlation between variables as distance")
+# cor_heat_map(cormat_reorder1)
+
+cormat2 <- diff_tx.tb %>% 
+  # select just the f0 variables and AVQI
+  # select(7:10, 35) %>%
+  # select all acoustics variables
+  select(5:35) %>%
+  cor(., use = "pairwise.complete.obs", method="pearson") %>%
+  round(., 1)
+
+print("Below: correlation plot heat map for all acoustics vars (post-pre),")
+# print("in order given in file")
+cor_heat_map(cormat2)
+
+# Reorder the correlation matrix using correlation between variables as distance
+# cormat_reorder2 <- reorder_cormat(cormat2)
+# print("Below: correlation plot heat map for all acoustics vars (post-pre),")
+# print("reordered using correlation between variables as distance")
+# cor_heat_map(cormat_reorder2)
+```
+
+
+## Correlations for pairs of variables of interest, plus scatter plots, and histograms
+
+The goal with the following plots is to look at some variables of interest (the f0 variables and AVQI) more closely. The correlations are repeated from the above plots (but bigger and easier to read), plus scatter plots between pairs of variables show what the correlations look like, and histograms for each variable show us its distribution (so we can check if it looks skewed, for example). 
+
+The first set of plots shows values for the acoustics variables pre-treatment, and the second set of plots shows their values for post-treatment minus pre-treatment. Correlations are higher among pre-treatment variables than the differences (post-pre), with the exception of the correlations between AVQI and cs_f0 and between AVQI and capev_f0. The histograms of the variable distributions do not show any strong skews.
+
+```{r plots1}
+
+# plot pairs of variables against each other: look at their scatterplots & correlations,
+# plus histograms of individual variables
+
+# put histograms on the diagonal
+panel.hist <- function(x, ...)
+{
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(usr[1:2], 0, 1.5) )
+    h <- hist(x, plot = FALSE)
+    breaks <- h$breaks; nB <- length(breaks)
+    y <- h$counts; y <- y/max(y)
+    rect(breaks[-nB], 0, breaks[-1], y, col = "cyan", ...)
+}
+# put correlations on the upper panels
+panel.corr <- function(x, y, digits = 2, prefix = "", cex.cor, ...)
+{
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(0, 1, 0, 1))
+    r <- cor(x, y, use="pairwise.complete.obs")
+    txt <- format(c(r, 0.123456789), digits = digits)[1]
+    txt <- paste0(prefix, txt)
+    text(0.5, 0.5, txt, cex=2)
+}
+
+pre_tx.tb %>% 
+  # select just the f0 variables and AVQI
+  select(7:10,35) %>% 
+  pairs(., diag.panel = panel.hist, upper.panel = panel.corr, gap=0, row1attop=TRUE, main = "Pre-treatment")
+
+print("")
+diff_tx.tb %>% 
+  # select just the f0 variables and AVQI
+  select(7:10,35) %>% 
+  pairs(., diag.panel = panel.hist, upper.panel = panel.corr, gap=0, row1attop=TRUE, main = "Difference: post minus pre")
+
+
+```
+
+
+## Plots of differences post- minus pre-treatment for acoustics variables of interest
+
+The goal of the plots below is to look at the differences post- minus pre-treatment for acoustics variables of interest (f0 variables and AVQI): their relationships with each other and with other variables that might affect them (like Sex and Age). 
+
+The first plot below shows post-pre differences for i_f0 vs. a_f0 for females (1) and males (2), colored by treatment group (LMRVT or straw). It is potentially interesting that the relationship between i_f0 and a_f0 has less spread for males than for females; however, it could be caused by chance and because there are fewer data points for males than females. Treatment appears approximately evenly spread throughout.
+
+```{r plots3, out.width="80%"}
+diff_tx.tb %>% 
+  ggplot(mapping = aes(x = a_f0, y = i_f0, color = group_name)) + 
+  geom_point() +
+  labs(color = "Treatment",
+       title = "Post-Pre i_f0 vs. Post-Pre a_f0 for females (1) and males (2)") + 
+  # make separate plots for each Sex
+  facet_wrap(vars(as.factor(Sex)))
+```
+
+The following plot shows  post-pre differences for cs_f0 vs. capev_f0 for females (1) and males (2), colored by treatment group (LMRVT or straw). Treatment appears approximately evenly spread throughout.
+
+```{r plots4, out.width="80%"}
+diff_tx.tb %>% 
+  ggplot(mapping = aes(x = capev_f0, y = cs_f0, color = group_name)) + 
+  geom_point() +
+  labs(color = "Treatment",
+       title = "Post-Pre cs_f0 vs. Post-Pre capev_f0 for females (1) and males (2)") + 
+  facet_wrap(vars(as.factor(Sex)))
+```
+
+The following plot shows  post-pre differences for cs_f0 vs. AVQI for females (1) and males (2), colored by treatment group (LMRVT or straw). Treatment appears approximately evenly spread throughout.
+
+```{r plots5, out.width="80%"}
+diff_tx.tb %>% 
+  ggplot(mapping = aes(x = AVQI, y = cs_f0, color = group_name)) + 
+  geom_point() +
+  labs(color = "Treatment",
+       title = "Post-Pre cs_f0 vs. Post-Pre AVQI for females (1) and males (2)") + 
+  facet_wrap(vars(as.factor(Sex)))
+```
+
+The following plot shows  post-pre differences for AVQI vs. Age for females (1) and males (2), colored by treatment group (LMRVT or straw). Treatment appears approximately evenly spread throughout. There does not appear to be much of a relationship with Age; however, the relationship may just be hard to see with this number of data points.
+
+```{r plots6, out.width="80%"}
+diff_tx.tb %>% 
+  ggplot(mapping = aes(x = Age, y = AVQI, color = group_name)) + 
+  geom_point() +
+  labs(color = "Treatment",
+       title = "Post-Pre AVQI vs. Age for females (1) and males (2)") + 
+  facet_wrap(vars(as.factor(Sex)))
+```
+
+
+## Analysis of post- minus pre-treatment difference for AVQI: comparison of treatment groups
+
+Table 1 below shows the results for the linear regression of post- minus pre-treatment AVQI difference on Treatment (0 = LMRVT; 1 = straw) and Age (in years). According to the p-values in the table, neither Treatment or Age is significantly associated with AVQI difference at the level of $\alpha = 0.05$. However, this study is known to be underpowered, so it is possible that a difference between treatments exists but has not been detected.
+
+Table 2 below shows the estimates for mean post- minus pre-treatment AVQI difference for each treatment group with 95% CIs at the average age. Note that both sets of CIs include zero, which indicates that neither LMRVT or straw treatment significantly affected AVQI at the level of $\alpha = 0.05$. Again, however, this study was underpowered, and it is possible that either or both treatments affect AVQI, but this study was not able to detect the effect.
+
+Table 3 below shows the comparison of treatment difference between straw and LMRVT with 95% CI for the same linear model as above. The p-value for the difference of straw - LMRVT of 0.38 indicates that the difference of the mean AVQI difference between treatments was not detectable at $\alpha = 0.05$. Another way to look at this is that the 95% CI of the difference (-0.20, 0.52) includes zero, which indicates the same thing. However, we have the same caveat about this study being underpowered as above.
+
+```{r analysis}
+
+# Linear regression of AVQI difference (post minus pre) on treatment (group_name) and age
+res.lm <- lm(AVQI ~ group_name + Age, data = diff_tx.tb)
+# You can see from these results that Treatment & Age are not significantly related to AVQI diff.
+res.tb <- tidy(res.lm)
+res.tb <- res.tb %>%
+  # Renaming group_namestraw for understandability.
+  # In this analysis, R automatically created an indicator variable for group_name:
+  # group_name = 1 for Straw and group_name = 0 for LMRVT.
+  mutate(term = c("Intercept", "Treatment", "Age"))
+kable(res.tb, digits = 3, caption = "Linear model results for AVQI diff. (post - pre) ~ Treatment + Age, where Treatment is an indicator variable, with 0 = LMRVT and 1  =Straw.")
+
+# However, we're not done. We need mean and 95% CI for the difference between the groups = treatments.
+# We can find those using the emmeans package.
+res.emm <- emmeans(res.lm, ~ group_name + Age)
+kable(res.emm, digits = 3, caption = "Estimates for mean AVQI difference for each treatment group with 95% CIs at the average age (45.7 yrs) for the linear model AVQI diff. ~ Treatment + Age.",
+      col.names = c("Treatment","Age", "mean AVQI diff.", "SE", "df", "lower.CL", "upper.CL"))
+
+res.contrasts <- contrast(res.emm, method="revpairwise")
+confint.res.contrasts <- confint(res.contrasts)
+res.contrasts.tb <- tidy(res.contrasts) %>%
+  mutate(lower.CL = confint.res.contrasts$lower.CL, upper.CL = confint.res.contrasts$upper.CL) %>%
+  select(-term)
+res.contrasts.tb[1,1] <- "straw - LMRVT"
+kable(res.contrasts.tb, digits = 3, 
+      caption = "Comparison of treatment difference between straw and LMRVT with 95% CI for the linear model AVQI diff. ~ Treatment + Age.")
+
+```
+
+## Checking model assumptions for above analysis 
+
+Below we show the results for Levene's test for homogeneity of variances. Because the p-value for Levene's test = 0.62 > $\alpha = 0.05$, we accept the null hypothesis of equal variances between the groups (LMRVT and straw here). Thus, the assumption of homogeneity of variances is satisfied.
+
+```{r check_model_assumptions1}
+# Checking model assumption of equal variances
+kable(tidy(car::leveneTest(AVQI ~ as.factor(group_name), data = diff_tx.tb)), digits = 2)
+
+```
+
+Below we show the results for Shapiro's test for the normality of the residuals. Because the p-value for Shapiro's test = 0.80 > $\alpha = 0.05$, we accept the null hypothesis of normally distributed residuals. Therefore, the assumption of normally distributed residuals is satisfied.
+
+```{r check_model_assumptions2}
+# test for normality of residuals
+result.lm <- lm(AVQI ~ group_name + Age, data = diff_tx.tb)
+kable(tidy(shapiro.test(result.lm$residuals)), digits = 2)
+
+```
+
+
+
+
