@@ -1,0 +1,74 @@
+---
+title: "Advice on Statistical Methods for Desiree Jones"
+author: 
+- Huashi Li (lihuashi1@arizona.edu)
+- Alex Salce (asalce@arizona.edu)
+- Taryn Laird (tarynl@arizona.edu)"
+date: "2024-10-09"
+subtitle: STAT 688 Statistical Consulting with Dean Billheimer
+bibliography: references.bib
+output: 
+  pdf_document:
+    extra_dependencies: ["float"]
+  html_document:
+    df_print: paged
+    theme: cosmo
+header-includes:
+- \renewcommand*\familydefault{\sfdefault} %% this picks a sans serif font
+- \usepackage[T1]{fontenc}
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(fig.pos = "H", out.extra = "", tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+```
+
+## Executive Summary
+
+
+
+## **Detailed Summary**
+
+### **1. Background**
+
+
+
+### **2. Methods**
+
+
+```{r, echo=FALSE, warning=FALSE}
+library(knitr)
+library(formatR)
+```
+
+```{r agar-figures-side, fig.margin=TRUE, fig.show='hold', fig.align='center', fig.cap="Agar survival analyses by experiment (pooled replicates)", out.width="30%", echo=FALSE}
+# include_graphics("xxx.png")
+```
+
+
+
+### **Recommendations**
+
+Lorem Ipsum
+
+#### **1.**
+
+Lorem Ipsum
+
+
+### **4. Recommended further study**
+
+Lorem Ipsum
+
+
+### **Appendix**
+
+#### **1. **
+Lorem Ipsum
+
+#### **X. R code**
+
+----------------------------------------
+
+```{r setup_environment, message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=60), warning=FALSE, eval=FALSE}
+
+

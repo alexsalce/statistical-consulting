@@ -1,0 +1,109 @@
+---
+title: "Advice on Statistical Methods for Desiree Jones"
+author: 
+- Huashi Li (lihuashi1@arizona.edu)
+- Alex Salce (asalce@arizona.edu)
+- Taryn Laird (tarynl@arizona.edu)"
+date: "2024-10-09"
+subtitle: STAT 688 Statistical Consulting with Dean Billheimer
+bibliography: references.bib
+output: 
+  html_document:
+    df_print: paged
+    theme: cosmo
+  pdf_document:
+    extra_dependencies: ["float"]
+header-includes:
+- \renewcommand*\familydefault{\sfdefault} %% this picks a sans serif font
+- \usepackage[T1]{fontenc}
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(fig.pos = "H", out.extra = "", tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+```
+
+## Executive Summary
+
+Desiree Jones is a health educator in the College of Medicine at the University of Arizona. Her current work with a program partnering with community organizations aims to help create and administer effective cancer education about "cancer development, risk factors, healthy habits, and cancer prevention including cancer screening", for tribal communities. 
+
+In efforts to develop this education, Desiree gave separate presentations to target demographics for each of five subjects, Men's cancers, Women's cancers, colorectal cancer, lung cancer, and skin cancers. After each presentation, the audience members were given a survey in response to the presentation subject matter. The survey prompts included questions for basic demographic information, Likert-scale responses related to feelings about presentation time and amount of information (3 responses), as well as Likert-scale responses (10 responses) intended to evaluate the effectiveness of the education.
+
+She was able to collect responses for each presentation, varying from roughly 10 to 30 survey participants per presentation. The intent of the data is to gain insight into the effectiveness of each presentation based upon the responses to a selection of the Likert-scale questions. In particular, she is also interested in responses to questions concerning the likelihood of a participant seeking follow-up based on the presentation, and whether those participants had already gotten screenings previously.
+
+*Since Desiree has already done qualitative breakdowns of responses, we recommend the following techniques and qualifiers to the data that she captured (TO BE UPDATED)*
+
+
+
+In keeping with the limitations described in the questionnaire, these results are intended only for use by our community partner. They are not intended for research purposes or reports.
+
+
+## **Detailed Summary**
+
+### **1. Background**
+
+Desiree is a health educator in University of Arizona's College of Medicine, and is seeking statistical consultation to gain insight about some survey response data that she has collected. She is working with a community partner to help improve ways of administering cancer education to tribal communities.
+
+She has already done some basic qualitative insights with the data that she has captured, and would like some more input as to whether there are any further analyses to her data that can be done that would be value-add to some of her areas of interest from the responses. The data are responses to surveys that were administered to participants in educational presentations that Desiree held for each of five topics about different kinds of cancer; Men's cancers, Women's cancers, colorectal cancer, lung cancer, and skin cancers. A survey corresponding to the presentation topic was administered to participants immediately following the presentation.
+
+Each survey had the same general structure.  The first questions were to capture demographic information like age, gender assigned at birth, current gender identity, and race, and one additional question targeting whether the participant has received any previous screening for the type of cancer that was the subject of the presentation. These were "radio button" style responses, so the participant could only select one.  The next set of questions, 10 in total, were Likert-scale questions intended to evaluate the effectiveness of the presentation. Response options were 5 typical categorical options, Strongly Disagree / Disagree / Neither Agree or Disagree / Agree / Strongly Agree, and were prompts about whether the participant felt like they learned new information from the presentation, whether they would share information with others, if they would pursue follow up, and if they now knew how to do so, among other evaluations.
+
+Lastly, each survey asked three questions with Likert-scale responses about whether the participant felt the length of activity, amount of information, and amount of time for discussion was too long, too short, or just right.  A freeform response section immediately followed, but will not be considered in any of our anlaysis.
+
+In total, Desiree collected $76$ responses, with the following approximate breakdown.
+
+- Women’s Cancers: 12 participants
+- Men’s Cancers: 18 participants
+- Colorectal Cancer: 6-8 participants
+- Lung Cancer: 31 participants
+- Skin Cancer: 12 participants
+
+Based on our consultation, Desiree would like to know if there are any statistical methods that may be useful to her evaluation of the effectiveness of each presentation, and if there are any comparisons that may be useful.  If so, what are they, and how those analyses can be produced with the data that she captured.
+
+### **2. Methods**
+
+Since we have enough information to construct our own simulated data to use for analysis demonstration, we generated a simulated dataset based upon her Lung Cancer participation numbers to avoid any use of potentially sensitive information.
+
+
+```{r, echo=FALSE, warning=FALSE}
+library(knitr)
+library(formatR)
+```
+
+```{r agar-figures-side, fig.margin=TRUE, fig.show='hold', fig.align='center', fig.cap="Agar survival analyses by experiment (pooled replicates)", out.width="30%", echo=FALSE}
+# include_graphics("xxx.png")
+```
+
+
+
+### **Recommendations**
+
+It is not recommended to perform any inferential statistics based on the data acquired and the overall goal of assessment of whether or not a presentation was effective. Given the nature of the data collected, it will be sufficient to use qualitative approaches to gain insights regarding the effectiveness of the presentations. We have generated some simulated data that we use as an example to model some recommended approaches to data insights below.
+
+#### **1. Excel Pivot Tables**
+
+Excel has some worthwhile tools that may help in finding cuts of the data that may be useful in answering some questions. Namely, Excel's *Pivot Table* function serves as a useful way to build more specific insights from the full dataset.
+
+#### **2. Data Background Evaluation**
+
+It is important to understand and be forthcoming about potential biases in the populations selected, and evaluate how that may impact the insights that are being presented.
+
+
+### **4. Recommended further study**
+
+- Understanding 
+
+In keeping with the limitations described in the questionnaire, these results are intended only for use by our community partner. They are not intended for research purposes or reports.
+
+
+### **Appendix**
+
+#### **1. **
+Lorem Ipsum
+
+#### **X. R code, Tools, Other**
+
+----------------------------------------
+
+```{r setup_environment, message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=60), warning=FALSE, eval=FALSE}
+
+
